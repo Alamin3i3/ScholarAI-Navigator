@@ -1,17 +1,17 @@
 from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QListWidget,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
-    QListWidgetItem
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView
 )
 
-from database import (
-    get_universities,
-    get_university_by_id
-)
 
-from university_details import UniversityDetails
+from database import get_universities
 
 
 
@@ -21,104 +21,263 @@ class UniversityList(QWidget):
 
         super().__init__()
 
-        self.setWindowTitle(
-            "University Database"
-        )
+        self.all_universities = []
 
-        self.resize(600,500)
+        self.setup_ui()
 
+        self.load_universities()
+
+
+
+    def setup_ui(self):
 
         layout = QVBoxLayout()
 
 
-        self.search = QLineEdit()
+        # Title
 
-        self.search.setPlaceholderText(
-            "Search university..."
+        title = QLabel(
+            "🎓 Universities"
         )
 
-
-        self.search.textChanged.connect(
-            self.load_data
-        )
-
-
-        self.list = QListWidget()
-
-
-        # Connect only once
-        self.list.itemClicked.connect(
-            self.show_details
+        title.setObjectName(
+            "Title"
         )
 
 
         layout.addWidget(
-            self.search
+            title
         )
+
+
+
+        # Search
+
+        search_layout = QHBoxLayout()
+
+
+        self.search_box = QLineEdit()
+
+        self.search_box.setPlaceholderText(
+            "Search universities..."
+        )
+
+
+        self.search_button = QPushButton(
+            "🔍 Search"
+        )
+
+
+        search_layout.addWidget(
+            self.search_box
+        )
+
+
+        search_layout.addWidget(
+            self.search_button
+        )
+
+
+        layout.addLayout(
+            search_layout
+        )
+
+
+
+        # Table
+
+        self.table = QTableWidget()
+
+
+        self.table.setColumnCount(
+            4
+        )
+
+
+        self.table.setHorizontalHeaderLabels(
+            [
+                "University",
+                "Country",
+                "Program",
+                "Status"
+            ]
+        )
+
+
+        self.table.setAlternatingRowColors(
+            True
+        )
+
+
+        self.table.verticalHeader().setVisible(
+            False
+        )
+
+
+        self.table.setSelectionBehavior(
+            QTableWidget.SelectionBehavior.SelectRows
+        )
+
+
+        self.table.setEditTriggers(
+            QTableWidget.EditTrigger.NoEditTriggers
+        )
+
+
+        header = self.table.horizontalHeader()
+
+
+        header.setSectionResizeMode(
+            0,
+            QHeaderView.ResizeMode.Stretch
+        )
+
+
+        header.setSectionResizeMode(
+            1,
+            QHeaderView.ResizeMode.ResizeToContents
+        )
+
+
+        header.setSectionResizeMode(
+            2,
+            QHeaderView.ResizeMode.Stretch
+        )
+
+
+        header.setSectionResizeMode(
+            3,
+            QHeaderView.ResizeMode.ResizeToContents
+        )
+
+
 
         layout.addWidget(
-            self.list
+            self.table
         )
 
 
-        self.setLayout(layout)
+        self.setLayout(
+            layout
+        )
 
 
-        self.load_data()
+
+        # Search connection
+
+        self.search_box.textChanged.connect(
+            self.search_universities
+        )
 
 
 
-    def load_data(self):
-
-        self.list.clear()
+    def load_universities(self):
 
 
-        universities = get_universities()
+        self.all_universities = get_universities()
 
 
-        keyword = self.search.text().lower()
+        self.display_universities(
+            self.all_universities
+        )
 
 
-        for university in universities:
 
-            name = university[1]
-
-            country = university[2]
+    def display_universities(self, universities):
 
 
-            text = (
-                f"{name} | {country}"
+        self.table.setRowCount(
+            len(universities)
+        )
+
+
+        for row, university in enumerate(universities):
+
+            # database order:
+            # id,name,country,website,program,tuition,deadline,requirements,notes,status
+
+
+            self.table.setItem(
+                row,
+                0,
+                QTableWidgetItem(
+                    university[1]
+                )
             )
 
 
-            if keyword in text.lower():
+            self.table.setItem(
+                row,
+                1,
+                QTableWidgetItem(
+                    university[2]
+                )
+            )
 
-                item = QListWidgetItem(text)
+
+            self.table.setItem(
+                row,
+                2,
+                QTableWidgetItem(
+                    university[4]
+                )
+            )
 
 
-                # Store database ID
-                item.setData(
-                    1,
-                    university[0]
+            self.table.setItem(
+                row,
+                3,
+                QTableWidgetItem(
+                    university[9]
+                )
+            )
+
+
+
+    def search_universities(self):
+
+
+        text = self.search_box.text().lower()
+
+
+
+        if text == "":
+
+            self.display_universities(
+                self.all_universities
+            )
+
+            return
+
+
+
+        filtered = []
+
+
+        for university in self.all_universities:
+
+
+            name = str(
+                university[1]
+            ).lower()
+
+
+            country = str(
+                university[2]
+            ).lower()
+
+
+            if (
+                text in name
+                or text in country
+            ):
+
+                filtered.append(
+                    university
                 )
 
 
-                self.list.addItem(item)
 
-
-
-    def show_details(self, item):
-
-        university_id = item.data(1)
-
-
-        university = get_university_by_id(
-            university_id
+        self.display_universities(
+            filtered
         )
-
-
-        self.details = UniversityDetails(
-            university
-        )
-
-        self.details.show()

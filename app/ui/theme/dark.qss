@@ -1,0 +1,167 @@
+QMainWindow {
+
+    background-color: #202020;
+
+}
+
+
+QWidget {
+
+    color: #ffffff;
+
+    font-family: "Segoe UI";
+
+    font-size: 14px;
+
+}
+
+
+
+QPushButton {
+
+    background-color: #2d2d30;
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    border: none;
+
+}
+
+
+
+QPushButton:hover {
+
+    background-color: #3e3e42;
+
+}
+
+
+
+QPushButton:pressed {
+
+    background-color: #0078d4;
+
+}
+
+
+
+QListWidget {
+
+    background-color: #181818;
+
+    border:none;
+
+    padding:10px;
+
+}
+
+
+
+QListWidget::item {
+
+    padding:12px;
+
+    border-radius:8px;
+
+}
+
+
+
+QListWidget::item:selected {
+
+    background-color:#0078d4;
+
+}
+
+
+
+QLineEdit,
+QTextEdit {
+
+    background-color:#2b2b2b;
+
+    border-radius:8px;
+
+    padding:8px;
+
+    border:1px solid #444;
+
+}
+
+#Card {
+
+background-color:#2b2b2b;
+
+border-radius:15px;
+
+padding:20px;
+
+}
+
+#Title {
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+
+QLabel {
+
+    font-size:15px;
+
+}
+
+
+
+#Card QLabel {
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+QTableWidget {
+
+    background-color:#252525;
+
+    border-radius:12px;
+
+    border:none;
+
+    gridline-color:#444;
+
+}
+
+
+QTableWidget::item {
+
+    padding:8px;
+
+}
+
+
+QTableWidget::item:selected {
+
+    background-color:#0078d4;
+
+}
+
+
+QHeaderView::section {
+
+    background-color:#0078d4;
+
+    color:white;
+
+    padding:10px;
+
+    border:none;
+
+    font-weight:bold;
+
+}
