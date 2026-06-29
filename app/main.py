@@ -1,37 +1,106 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 
-class MainWindow(QWidget):
-    
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QListWidget,
+    QStackedWidget
+)
+
+
+from dashboard import Dashboard
+from university_list import UniversityList
+from university_form import UniversityForm
+
+
+
+class MainWindow(QMainWindow):
+
+
     def __init__(self):
+
         super().__init__()
 
-        self.setWindowTitle("ScholerAI Naigator")
-        self.resize(800,500)
 
-        layout = QVBoxLayout()
-
-        title = QLabel("ScholerAI Navigator")
-        title.setStyleSheet(""" 
-                font-size: 28px;
-                font-weight: bold;
-                """)
-        
-        subtile = QLabel(
-            "University Research Assistant - version 0.1"
+        self.setWindowTitle(
+            "ScholarAI Navigator"
         )
 
-        layout.addWidget(title)
-        layout.addWidget(subtile)
+        self.resize(
+            1000,
+            600
+        )
 
-        self.setLayout(layout)
+
+        # Sidebar
+
+        self.sidebar = QListWidget()
+
+
+        self.sidebar.addItem(
+            "Dashboard"
+        )
+
+        self.sidebar.addItem(
+            "Universities"
+        )
+
+        self.sidebar.addItem(
+            "Add University"
+        )
+
+
+        # Pages
+
+        self.pages = QStackedWidget()
+
+
+        self.dashboard = Dashboard()
+
+        self.university_list = UniversityList()
+
+        self.form = UniversityForm()
+
+
+
+        self.pages.addWidget(
+            self.dashboard
+        )
+
+        self.pages.addWidget(
+            self.university_list
+        )
+
+        self.pages.addWidget(
+            self.form
+        )
+
+
+        self.sidebar.currentRowChanged.connect(
+            self.pages.setCurrentIndex
+        )
+
+
+        self.setCentralWidget(
+            self.pages
+        )
+
+
+        self.addDockWidget(
+            1,
+            self.sidebar
+        )
+
 
 
 app = QApplication(sys.argv)
 
+
 window = MainWindow()
+
 window.show()
 
-sys.exit(app.exec())
 
-                        
+sys.exit(
+    app.exec()
+)
